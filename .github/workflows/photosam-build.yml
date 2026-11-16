@@ -26,6 +26,9 @@ jobs:
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Install Android Rust target
+        run: rustup target add aarch64-linux-android
+
       - name: Install build dependencies
         run: |
           sudo apt-get update

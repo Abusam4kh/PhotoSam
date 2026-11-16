@@ -1,0 +1,45 @@
+name: Build PhotoSam APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git python3 python3-pip pkg-config clang lld cmake ninja-build
+
+      - name: Build PhotoSam release APK
+        run: |
+          chmod +x build.sh
+          bash build.sh -photocraft -appname=PhotoSam -packagename=com.photosam.editor
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: PhotoSam-APK
+          path: output/*.apk
+          if-no-files-found: error
+          retention-days: 14
